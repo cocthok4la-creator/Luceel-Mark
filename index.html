@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; media-src blob:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Luceel Mark — Make a QR code. Keep it simple.</title>
+<meta name="description" content="Free QR code generator by Luceel. Make QR codes for links, Wi-Fi, WhatsApp, UPI payments, contacts and more, then download as PNG, SVG or PDF. Made in your browser; nothing you enter is sent anywhere.">
+<meta property="og:title" content="Luceel Mark — Free QR code generator">
+<meta property="og:description" content="Make clean, scannable QR codes in your browser and download them as PNG, SVG or PDF.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f3f4f1" media="(prefers-color-scheme:light)">
+<meta name="theme-color" content="#191b1d" media="(prefers-color-scheme:dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cstyle%3E.b%7Bfill:%232f4f57%7D.f%7Bfill:%23fff%7D@media(prefers-color-scheme:dark)%7B.b%7Bfill:%239dbcc4%7D.f%7Bfill:%2313201f%7D%7D%3C/style%3E%3Crect class='b' width='32' height='32' rx='7'/%3E%3Cpath class='f' d='M6 6h8v8H6zM18 6h8v8h-8zM6 18h8v8H6zM18 18h4v4h-4zM24 24h2v2h-2z'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%232f4f57'/%3E%3Cpath fill='%23fff' d='M6 6h8v8H6zM18 6h8v8h-8zM6 18h8v8H6zM18 18h4v4h-4zM24 24h2v2h-2z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f4f1;--surface:#fafaf8;--text:#22262a;--muted:#555c63;--line:#d5d8d3;--accent:#2f4f57;--accent-ink:#fff;--err:#8f2d25;--ok:#2d5a3d;
+--sans:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;--serif:"Newsreader",Georgia,"Times New Roman",serif;
+box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#191b1d;--surface:#212427;--text:#e8e9e6;--muted:#a7adb2;--line:#3a3f44;--accent:#9dbcc4;--accent-ink:#13201f;--err:#f0a39b;--ok:#9fd1ae;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#191b1d;--surface:#212427;--text:#e8e9e6;--muted:#a7adb2;--line:#3a3f44;--accent:#9dbcc4;--accent-ink:#13201f;--err:#f0a39b;--ok:#9fd1ae;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:5rem;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}.btn:hover{transform:none!important}}
+body{margin:0;background:var(--bg);color:var(--text);font:400 1.0625rem/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:68rem;margin:0 auto;padding:0 max(1.25rem,env(safe-area-inset-right,0px)) 0 max(1.25rem,env(safe-area-inset-left,0px))}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:var(--serif);font-weight:400;letter-spacing:-.015em;margin:0;line-height:1.12}
+h1{font-size:clamp(2.3rem,7vw,4.75rem)}
+h2{font-size:clamp(1.8rem,3.6vw,2.5rem)}
+h3{font:600 1.05rem/1.3 var(--sans);letter-spacing:0}
+p{margin:0}
+.muted{color:var(--muted)}
+/* header */
+.site-header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;gap:1rem;min-height:3.5rem}
+.brand{font:500 1.4rem/1 var(--serif);text-decoration:none;letter-spacing:-.01em}
+nav{display:flex;gap:1.5rem;margin-left:auto;align-items:center}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted);padding:.4rem 0}
+nav a:hover{color:var(--text)}
+nav a.quiet{border:1px solid var(--line);border-radius:6px;padding:.35rem .8rem;color:var(--text)}
+@media (max-width:42rem){
+ .site-header{position:static}html{scroll-padding-top:1rem}
+ .bar{flex-wrap:wrap;gap:.25rem 1rem;padding-top:.4rem}.brand{margin-right:auto}
+ nav{order:3;width:100%;margin:0;gap:.8rem;overflow-x:auto;padding-bottom:.5rem}nav a{white-space:nowrap;font-size:.9rem}nav a.quiet{padding:.3rem .65rem}
+}
+/* buttons & fields */
+.btn{font:500 .98rem/1 var(--sans);padding:.85rem 1.2rem;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;min-height:2.75rem;transition:background .15s,border-color .15s}
+.btn:hover:not(:disabled){border-color:var(--muted);background:var(--surface)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover:not(:disabled){filter:brightness(1.08);background:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+label,.lbl{display:block;font-weight:600;font-size:.95rem;margin-bottom:.4rem}
+.hint{font-size:.88rem;color:var(--muted);margin-top:.35rem}
+input[type=text],input[type=url],input[type=email],input[type=tel],input[type=password],textarea,select{width:100%;font:inherit;font-size:1rem;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.7rem .8rem;min-height:2.75rem}
+textarea{min-height:7.5rem;resize:vertical}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+input[aria-invalid=true],textarea[aria-invalid=true]{border-color:var(--err)}
+.err{font-size:.9rem;color:var(--err);margin-top:.35rem;font-weight:500}
+.err:empty{display:none}
+.field{margin-bottom:1.25rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media (max-width:30rem){.row{grid-template-columns:1fr}}
+.check{display:flex;gap:.6rem;align-items:center;font-weight:400}
+.check input{width:1.1rem;height:1.1rem;accent-color:var(--accent)}
+/* hero */
+.hero{padding:clamp(3rem,8vw,6rem) 0 clamp(2rem,5vw,3.5rem)}
+.hero p.lead{font-size:clamp(1.1rem,2vw,1.3rem);max-width:36rem;margin-top:1.5rem;color:var(--muted)}
+.hero .note{font-size:.92rem;margin-top:1rem;color:var(--muted);max-width:36rem}
+/* generator */
+.gen{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(2rem,5vw,4rem);padding:2rem 0 clamp(3rem,7vw,5rem);align-items:start}
+@media (max-width:52rem){.gen{grid-template-columns:1fr}}
+.tabs{display:flex;flex-wrap:wrap;gap:.25rem;border-bottom:1px solid var(--line);margin-bottom:1.75rem}
+.tab{font:500 .98rem var(--sans);background:none;border:0;border-bottom:2px solid transparent;padding:.7rem .85rem;color:var(--muted);cursor:pointer;margin-bottom:-1px;min-height:2.75rem}
+.tab:hover{color:var(--text)}
+.tab[aria-selected=true]{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+.style{margin-top:2.25rem;padding-top:1.75rem;border-top:1px solid var(--line)}
+.style h2{font-size:1.5rem;margin-bottom:1.25rem}
+.presets{display:flex;flex-wrap:wrap;gap:.5rem}
+.preset{display:inline-flex;align-items:center;gap:.55rem;font:500 .9rem var(--sans);background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:.45rem .7rem;cursor:pointer;min-height:2.5rem}
+.preset[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.sw{width:1.3rem;height:1.3rem;border-radius:4px;border:1px solid var(--line)}
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;font-weight:600;padding:1rem 0;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:400;font-size:1.3rem;line-height:1}
+details[open] summary::after{content:"\2212"}
+details .body{padding:0 0 1.25rem;color:var(--muted);max-width:42rem}
+.adv{margin-top:1.25rem}
+.adv summary{font-size:.98rem}.adv .body{color:var(--text)}
+/* preview */
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:clamp(1rem,3vw,1.75rem);display:grid;place-items:center;min-height:16rem;width:100%}
+#cv{width:100%;max-width:26rem;height:auto;display:none}
+.empty{text-align:center;max-width:16rem;color:var(--muted)}
+.empty strong{display:block;font:400 1.4rem/1.2 var(--serif);color:var(--text);margin-bottom:.5rem}
+.state{margin:1rem 0 .25rem;font-weight:600;min-height:1.6rem}
+.state.ok{color:var(--ok)}.state.bad{color:var(--err)}
+.acts{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+#msg:not(:empty){position:fixed;left:1rem;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;max-width:30rem;margin:0 auto;padding:.8rem 1rem;font-size:.95rem;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+/* sections */
+section.block{padding:clamp(3rem,7vw,5rem) 0;border-top:1px solid var(--line)}
+.steps,.uses{list-style:none;margin:0;padding:0;display:grid;gap:1.5rem}
+.steps li{display:grid;grid-template-columns:2.2rem 1fr;gap:.5rem}
+.steps .n{font:400 1.6rem/1.1 var(--serif);color:var(--muted)}
+.steps p,.uses p{color:var(--muted);margin-top:.2rem}
+.uses{grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+.uses li{border-top:1px solid var(--line);padding-top:1rem}
+footer{border-top:1px solid var(--line);padding:3rem 0 2.5rem;font-size:.95rem}
+.foot{display:grid;grid-template-columns:2fr 1fr;gap:2rem}
+@media (max-width:42rem){.foot{grid-template-columns:1fr}}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:.4rem}
+footer ul a{text-decoration:none;color:var(--muted)}footer ul a:hover{color:var(--text)}
+footer .small{margin-top:2rem;font-size:.88rem;color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* polish */
+:root{--shadow:0 1px 2px rgba(20,30,35,.06),0 12px 28px -14px rgba(20,30,35,.22);--glow:rgba(47,79,87,.2);--g1:#3d6a76;--g2:#2f4f57}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -14px rgba(0,0,0,.75);--glow:rgba(157,188,196,.18);--g1:#b3d0d7;--g2:#8fb2bb}}
+:root[data-theme=dark]{--shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -14px rgba(0,0,0,.75);--glow:rgba(157,188,196,.18);--g1:#b3d0d7;--g2:#8fb2bb}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(48rem 24rem at 85% -5%,var(--glow),transparent 70%)}
+body,.site-header,.panel,.stage,.steps li,.uses li,.faq details,input,textarea,select,.tab,.preset,.icon-btn{transition:background-color .3s,color .3s,border-color .3s,box-shadow .3s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ic{width:1.1rem;height:1.1rem;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.site-header{background:color-mix(in srgb,var(--bg) 85%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+nav a.quiet{border-radius:999px;padding:.4rem 1rem}
+.icon-btn{display:inline-grid;place-items:center;width:2.75rem;height:2.75rem;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;margin-left:-.4rem}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;border-radius:999px;padding:.8rem 1.25rem;font-weight:600;background:var(--surface);transition:transform .15s,box-shadow .2s,background-color .2s,border-color .2s}
+@media (hover:hover){.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:var(--shadow)}}
+.btn:active:not(:disabled){transform:scale(.98);box-shadow:none}
+.btn.primary,.btn.primary:hover:not(:disabled){background:linear-gradient(135deg,var(--g1),var(--g2));border-color:transparent;filter:none}
+.btn.primary{box-shadow:0 8px 20px -8px var(--g2)}
+input[type=text],input[type=url],input[type=email],input[type=tel],input[type=password],textarea,select{border-radius:10px}
+input:hover,textarea:hover,select:hover{border-color:var(--muted)}
+input:focus-visible,textarea:focus-visible,select:focus-visible{box-shadow:0 0 0 4px var(--glow)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(1.25rem,3vw,2rem);box-shadow:var(--shadow)}
+.panel input[type=text],.panel input[type=email],.panel input[type=tel],.panel textarea,.panel select{background:var(--bg)}
+.tabs{gap:.2rem;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:.3rem;width:fit-content;max-width:100%}
+.tab{border:0;border-radius:999px;margin:0;padding:.5rem 1rem;min-height:2.4rem}
+.tab:hover{background:var(--surface)}
+.tab[aria-selected=true],.tab[aria-selected=true]:hover{background:var(--accent);color:var(--accent-ink)}
+[role=tabpanel]:not([hidden]){animation:fade .3s ease}
+.preset{border-radius:999px}
+.preset:hover{border-color:var(--muted)}
+details.adv,details.adv:last-of-type{border:1px solid var(--line);border-radius:12px;padding:0 1rem}
+.stage{border-radius:18px;box-shadow:var(--shadow)}
+#cv{border:0;border-radius:8px;animation:fade .35s ease}
+.acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr))}.acts .btn{min-width:0}
+.sec-head{text-align:center;max-width:38rem;margin:0 auto clamp(2rem,5vw,3rem)}
+.sec-head p{color:var(--muted);margin-top:.75rem}
+.steps{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;counter-reset:none}
+.steps li{display:block;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:1.5rem;box-shadow:var(--shadow)}
+.steps .n{display:grid;place-items:center;width:2.5rem;height:2.5rem;border-radius:50%;margin-bottom:1rem;font:600 1rem/1 var(--sans);color:var(--accent-ink);background:linear-gradient(135deg,var(--g1),var(--g2))}
+.steps h3{margin-bottom:.4rem;font-size:1.1rem}
+.steps li:not(:last-child)::after{content:"";position:absolute;top:2.75rem;left:calc(100% + 1px);width:1.25rem;border-top:2px dashed var(--line)}
+@media (max-width:52rem){.steps{grid-template-columns:1fr}.steps li:not(:last-child)::after{display:none}}
+.uses li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.25rem}
+.faq{max-width:48rem;margin:0 auto;display:grid;gap:.75rem}
+.faq details,.faq details:last-of-type{border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.faq details[open]{border-color:var(--accent);box-shadow:var(--shadow)}
+.faq summary{padding:1.1rem 1.25rem;align-items:center;border-radius:14px}
+.faq summary:hover{color:var(--accent)}
+.faq summary::after,.faq details[open] summary::after{content:"";width:.55rem;height:.55rem;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:-.2rem .2rem 0 0;flex:none;transition:transform .25s}
+.faq details[open] summary::after{transform:rotate(-135deg);margin-top:.2rem;border-color:var(--accent)}
+.faq details .body{padding:0 1.25rem 1.25rem;max-width:none;animation:fade .3s ease}
+/* v2 */
+.tabwrap{position:relative;margin-bottom:1.75rem}
+.tabwrap .tabs{margin-bottom:0}
+.tabwrap .tabs{display:flex;flex-wrap:wrap;gap:.5rem;overflow:hidden;max-height:calc(2.4rem + 8px);padding:4px 6rem 4px 4px;border:0;background:none;border-radius:0;transition:max-height .3s}
+.tabwrap.open .tabs{max-height:30rem}
+.tabwrap .tab{border:1px solid var(--line);background:var(--surface);color:var(--text);margin:0;border-radius:999px;padding:.4rem 1rem;min-height:2.4rem}
+.tabwrap .tab:hover{border-color:var(--accent);background:var(--surface)}
+.tabwrap .tab[aria-selected=true],.tabwrap .tab[aria-selected=true]:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tabmore.has{border-color:var(--accent);color:var(--accent)}
+/* themed dropdowns */
+.dd{position:relative;min-width:0;max-width:100%}.dd.open{z-index:40}
+.dd-b,.dd-l,.dd-l li{box-sizing:border-box}
+.dd-n{position:absolute!important;opacity:0;pointer-events:none;width:1px!important;height:1px!important;min-height:0!important;padding:0!important;border:0!important}
+.dd-b{display:flex;align-items:center;justify-content:space-between;gap:.6rem;width:100%;min-height:2.75rem;padding:.7rem .8rem;font:inherit;font-size:1rem;text-align:left;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.panel .dd-b{background:var(--bg)}
+.dd-b:hover{border-color:var(--accent)}
+.dd-b:disabled{opacity:.55;cursor:not-allowed;border-color:var(--line)}
+.dd.open .dd-b,.dd-b:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.dd-b .ic{color:var(--muted);transition:transform .2s,color .2s}.dd.open .dd-b .ic{transform:rotate(180deg);color:var(--accent)}
+.dd-l{position:absolute;left:0;right:0;top:calc(100% + .35rem);z-index:30;margin:0;padding:.35rem;list-style:none;max-height:15rem;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);animation:ddin .14s ease-out}
+.dd-l[hidden]{display:none}
+.dd.up .dd-l{top:auto;bottom:calc(100% + .35rem)}
+.dd-l li{display:flex;justify-content:space-between;align-items:center;gap:.5rem;padding:.6rem .7rem;border-radius:8px;cursor:pointer;font-size:.97rem;color:var(--text)}
+.dd-l li.on{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.dd-l li[aria-selected=true]{font-weight:600;color:var(--accent)}
+.dd-l li[aria-selected=true]::after{content:"";width:.9rem;height:.9rem;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E") center/contain no-repeat}
+@keyframes ddin{from{opacity:0;transform:translateY(-4px)}}
+/* themed color picker */
+.cp{position:relative}.cp.open{z-index:40}
+.cp-b{display:flex;align-items:center;gap:.65rem;width:100%;min-height:2.75rem;padding:.4rem .7rem;box-sizing:border-box;font:inherit;font-size:.95rem;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.panel .cp-b{background:var(--bg)}
+.cp-b i{width:1.6rem;height:1.6rem;border-radius:50%;border:1px solid var(--line);flex:none}
+.cp-b span{font-variant-numeric:tabular-nums;text-transform:uppercase;letter-spacing:.03em}
+.cp-b:hover,.cp.open .cp-b{border-color:var(--accent)}.cp-b:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.cp-p{position:absolute;left:0;top:calc(100% + .35rem);z-index:30;width:min(17rem,calc(100vw - 2.5rem));padding:.8rem;box-sizing:border-box;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);animation:ddin .14s ease-out}
+.cp-p[hidden]{display:none}.cp.up .cp-p{top:auto;bottom:calc(100% + .35rem)}
+.cp-sv{position:relative;height:9rem;border-radius:10px;cursor:crosshair;touch-action:none;background-image:linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,transparent)}
+.cp-h{position:relative;height:.9rem;margin:.8rem 0;border-radius:999px;cursor:pointer;touch-action:none;background-image:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+.cp-sv b,.cp-h b{position:absolute;width:1.1rem;height:1.1rem;margin:-.55rem 0 0 -.55rem;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.55);pointer-events:none}
+.cp-h b{top:50%}
+.cp-p .cp-x{width:100%;min-height:2.4rem;padding:.4rem .6rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;text-transform:uppercase;box-sizing:border-box}
+.cp-sw{display:grid;grid-template-columns:repeat(7,1fr);gap:.45rem;margin-top:.8rem}
+.cp-sw button{aspect-ratio:1;border-radius:50%;border:1px solid var(--line);cursor:pointer;padding:0}
+.cp-sw button:hover,.cp-sw button[aria-pressed=true]{outline:2px solid var(--accent);outline-offset:2px}
+.lw{margin-top:.75rem;padding:.8rem 1rem;border:1px solid var(--warn);border-radius:14px;background:var(--surface);font-size:.9rem}
+.lw[hidden]{display:none}.lw strong{color:var(--warn);display:block}.lw ul{margin:.35rem 0 0;padding-left:1.1rem;color:var(--muted)}
+.chip{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.chip button{background:none;border:0;color:var(--text);padding:.4rem .8rem;font:inherit;font-size:.9rem;cursor:pointer;min-height:2.2rem}
+.chip button+button{border-left:1px solid var(--line);padding:.4rem .65rem;color:var(--muted)}.chip button:hover{color:var(--accent)}
+.tabmore{position:absolute;top:.35rem;right:.35rem;z-index:2;display:inline-flex;align-items:center;gap:.3rem;height:2.4rem;padding:0 .8rem;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);font:600 .9rem var(--sans);cursor:pointer}
+.tabmore[hidden]{display:none}.tabmore:hover{border-color:var(--accent);color:var(--accent)}
+.tabmore .ic{transition:transform .25s}.tabwrap.open .tabmore .ic{transform:rotate(180deg)}
+:root{--warn:#8a5a12}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--warn:#e2be7a}}
+:root[data-theme=dark]{--warn:#e2be7a}
+.tabs{width:100%}
+.tab{white-space:nowrap;flex:none}
+.g input,.g select,.g textarea{width:100%;font:inherit;font-size:1rem;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:.7rem .8rem;min-height:2.75rem}
+.g textarea{resize:vertical}
+.row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:1rem}
+@media (max-width:30rem){.row3{grid-template-columns:1fr}}
+.logo-row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.score{display:flex;gap:.75rem;align-items:flex-start;margin-top:.9rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.score[hidden],.rp[hidden]{display:none}
+.badge{flex:none;font:600 .82rem/1 var(--sans);padding:.4rem .75rem;border-radius:999px;border:1px solid currentColor}
+.badge.ok{color:var(--ok)}.badge.fair{color:var(--warn)}.badge.bad{color:var(--err)}
+.score span:last-child{font-size:.93rem;color:var(--muted)}
+.rp{margin-top:.75rem;padding:.9rem 1rem;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.rp small{display:block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.rp strong{display:block;font:400 1.2rem/1.25 var(--serif)}
+.rp span{display:block;color:var(--muted);font-size:.9rem;word-break:break-word;margin-top:.15rem}
+.pill{flex:none;font:600 .78rem/1 var(--sans);padding:.4rem .7rem;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
+.help{max-width:48rem;margin:0 auto;display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.25rem 1.4rem}
+.help svg{width:1.6rem;height:1.6rem;flex:none;color:var(--accent)}
+.help .hm{flex:1 1 14rem;min-width:0}
+.help .hm small{display:block;color:var(--muted);font-size:.88rem}
+.help a{display:inline-block;font-weight:600;font-size:1.08rem;color:var(--text);overflow-wrap:anywhere;text-underline-offset:.2em}
+.help a:hover{color:var(--accent)}
+.help .btn{flex:none}
+.help-note{max-width:48rem;margin:1rem auto 0;text-align:center;color:var(--muted);font-size:.92rem}
+[hidden]{display:none!important}
+.help a{font-size:1rem;overflow-wrap:break-word}
+input[type=range]{min-height:2.25rem}
+footer ul a{display:inline-block;padding:.4rem 0}
+footer .brand{display:inline-flex;flex-direction:row;align-items:center;gap:.55rem;padding:.4rem 0}
+#pvJump{display:none;position:fixed;right:max(1rem,env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:40;box-shadow:var(--shadow)}
+@media (max-width:52rem){#pvJump.on{display:inline-flex}}
+.legal{max-width:48rem;margin:0 auto;display:grid;gap:1rem}
+.legal article{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.25rem 1.4rem}
+.legal h3{font-size:1.2rem;margin-bottom:.6rem}
+.legal ul{margin:0;padding-left:1.1rem;display:grid;gap:.55rem;color:var(--muted);font-size:.95rem}
+.legal-note{max-width:48rem;margin:1rem auto 0;text-align:center;color:var(--muted);font-size:.88rem}
+/* logo + device optimisation */
+.brand{display:inline-flex;align-items:center;gap:.55rem}
+.logo{width:1.6rem;height:1.6rem;flex:none;display:block}
+.hero-title{display:flex;align-items:center;gap:clamp(.9rem,2.2vw,1.6rem);font-size:clamp(2.3rem,7vw,4.75rem)}
+.hero-title h1{font-size:1em;min-width:0}
+.hero-title .hero-logo{width:2.24em;height:2.24em;border-radius:.2em}
+@media (max-width:30rem){.hero-title{flex-direction:column;align-items:flex-start}.hero-title .hero-logo{width:3.4rem;height:3.4rem}}
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,canvas,video{max-width:100%}
+.tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.tab{white-space:nowrap;flex:none}
+@media (min-width:42.01rem) and (max-width:64rem){
+ body{font-size:1.05rem}
+ .wrap{padding-left:max(2rem,env(safe-area-inset-left,0px));padding-right:max(2rem,env(safe-area-inset-right,0px))}
+ .gen{grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:2rem}
+ .stage{min-height:14rem}
+ .uses{grid-template-columns:repeat(2,1fr)}
+}
+@media (min-width:42.01rem) and (max-width:52rem){
+ .gen{grid-template-columns:1fr}
+ #cv{max-width:22rem}
+ .steps{grid-template-columns:1fr}
+}
+@media (hover:none) and (pointer:coarse){
+ .tab,.preset,.btn,.icon-btn,nav a,summary{min-height:2.75rem}
+ nav a{display:inline-flex;align-items:center}
+ input[type=range]{min-height:2.75rem}
+}
+@media (max-height:32rem) and (orientation:landscape){.site-header{position:static}.hero{padding-top:2rem}}
+</style>
+<script>try{var t=localStorage.getItem("qm-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/></symbol>
+<symbol id="i-text" viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+<symbol id="i-logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="var(--accent)"/><path fill="var(--accent-ink)" d="M6 6h8v8H6zM18 6h8v8h-8zM6 18h8v8H6zM18 18h4v4h-4zM24 24h2v2h-2z"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></symbol>
+</defs></svg>
+<a class="sr" href="#generator">Skip to the generator</a>
+<header class="site-header">
+ <div class="wrap bar">
+  <a class="brand" href="#top"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>Luceel Mark</a>
+  <nav aria-label="Main">
+   <a href="#generator">Generator</a><a href="#how">How it works</a><a href="#faq">FAQ</a><a class="quiet" href="#about">About</a>
+  </nav>
+  <button class="icon-btn" id="themeBtn" type="button"></button>
+ </div>
+</header>
+<main id="top">
+<div class="wrap">
+ <div class="hero">
+  <div class="hero-title"><svg class="logo hero-logo" role="img" aria-label="Luceel Mark logo"><use href="#i-logo"/></svg><h1>Make a QR code.<br>Keep it simple.</h1></div>
+  <p class="lead">Enter a link or other content, adjust the colors if you like, and download the result as a PNG, SVG or PDF.</p>
+  <p class="note">Your code is created in your browser on this page. The content you type is not sent anywhere by the page.</p>
+ </div>
+ <section class="gen" id="generator" aria-labelledby="gen-h">
+  <div class="panel">
+   <h2 id="gen-h" class="sr">QR code generator</h2>
+   <div class="tabs" role="tablist" aria-label="Content type" id="tabs">
+    <button class="tab" role="tab" id="t-url" aria-controls="p-url" aria-selected="true">URL</button>
+    <button class="tab" role="tab" id="t-text" aria-controls="p-text" aria-selected="false" tabindex="-1">Plain text</button>
+    <button class="tab" role="tab" id="t-email" aria-controls="p-email" aria-selected="false" tabindex="-1">Email</button>
+    <button class="tab" role="tab" id="t-phone" aria-controls="p-phone" aria-selected="false" tabindex="-1">Phone</button>
+    <button class="tab" role="tab" id="t-wifi" aria-controls="p-wifi" aria-selected="false" tabindex="-1">Wi-Fi</button>
+   </div>
+   <div role="tabpanel" id="p-url" aria-labelledby="t-url">
+    <div class="field"><label for="url">Website address</label>
+     <input type="text" id="url" inputmode="url" autocapitalize="none" autocomplete="off" spellcheck="false" value="example.com/menu" placeholder="example.com/menu" aria-describedby="url-h url-e">
+     <p class="hint" id="url-h">If you leave out https://, we add it for you.</p><p class="err" id="url-e"></p></div>
+   </div>
+   <div role="tabpanel" id="p-text" aria-labelledby="t-text" hidden>
+    <div class="field"><label for="text">Text</label>
+     <textarea id="text" spellcheck="false" aria-describedby="text-h text-e" placeholder="Any message, note or reference number"></textarea>
+     <p class="hint" id="text-h">Shorter text makes a simpler code that is easier to scan.</p><p class="err" id="text-e"></p></div>
+   </div>
+   <div role="tabpanel" id="p-email" aria-labelledby="t-email" hidden>
+    <div class="field"><label for="email">Email address</label>
+     <input type="email" id="email" spellcheck="false" autocomplete="off" placeholder="hello@example.com" aria-describedby="email-e"><p class="err" id="email-e"></p></div>
+    <div class="field"><label for="subject">Subject <span class="muted" style="font-weight:400">(optional)</span></label>
+     <input type="text" id="subject" spellcheck="false" autocomplete="off"></div>
+    <div class="field"><label for="body">Message <span class="muted" style="font-weight:400">(optional)</span></label>
+     <textarea id="body" spellcheck="false" style="min-height:5.5rem"></textarea></div>
+   </div>
+   <div role="tabpanel" id="p-phone" aria-labelledby="t-phone" hidden>
+    <div class="field"><label for="phone">Phone number</label>
+     <input type="tel" id="phone" spellcheck="false" autocomplete="off" placeholder="+91 98765 43210" aria-describedby="phone-h phone-e">
+     <p class="hint" id="phone-h">Include the country code, such as +91, so it works from anywhere.</p><p class="err" id="phone-e"></p></div>
+   </div>
+   <div role="tabpanel" id="p-wifi" aria-labelledby="t-wifi" hidden>
+    <div class="field"><label for="ssid">Network name</label>
+     <input type="text" id="ssid" autocapitalize="none" autocomplete="off" aria-describedby="ssid-e"><p class="err" id="ssid-e"></p></div>
+    <div class="row">
+     <div class="field"><label for="wsec">Security</label>
+      <select id="wsec"><option value="WPA">WPA / WPA2 / WPA3</option><option value="WEP">WEP</option><option value="nopass">None (open network)</option></select></div>
+     <div class="field"><label for="wpass">Password</label>
+      <input type="text" id="wpass" autocapitalize="none" autocomplete="off" spellcheck="false" aria-describedby="wpass-e"><p class="err" id="wpass-e"></p></div>
+    </div>
+    <div class="field"><label class="check"><input type="checkbox" id="whidden"> This is a hidden network</label></div>
+    <p class="hint" style="margin-top:-.5rem">The password is stored in the code as plain text. Anyone who scans it can read it.</p>
+   </div>
+   <div class="style">
+    <h2>Appearance</h2>
+    <div class="field"><span class="lbl" id="pre-l">Color presets</span>
+     <div class="presets" role="group" aria-labelledby="pre-l" id="presets"></div></div>
+    <div class="row">
+     <div class="field"><label for="fg">Code color</label><input type="color" id="fg" value="#22262a"></div>
+     <div class="field"><label for="bg">Background color</label><input type="color" id="bg" value="#ffffff"></div>
+    </div>
+    <div class="row3">
+ <div class="field"><label for="dot">Dot style</label><select id="dot"><option value="0">Square</option><option value="1">Rounded</option><option value="2">Dots</option></select></div>
+ <div class="field"><label for="frame">Corner frame</label><select id="frame"><option value="0">Square</option><option value="1">Rounded</option><option value="2">Circle</option></select></div>
+ <div class="field"><label for="ball">Corner center</label><select id="ball"><option value="0">Square</option><option value="1">Rounded</option><option value="2">Circle</option></select></div>
+</div>
+<div class="row3">
+ <div class="field"><label for="grad">Dot color</label><select id="grad"><option value="0">Solid</option><option value="1">Gradient</option></select></div>
+ <div class="field"><label for="fg2">Gradient end</label><input type="color" id="fg2" value="#b4572f"></div>
+ <div class="field"><label for="fstyle">Frame</label><select id="fstyle"><option value="0">No frame</option><option value="1">Rounded, with label</option></select></div>
+</div>
+<div class="field"><label for="lbl">Label text (frame and print templates)</label><input type="text" id="lbl" value="Scan me" maxlength="24" autocomplete="off"></div>
+<div class="field"><span class="lbl">Logo in the center</span>
+ <div class="logo-row"><button type="button" class="btn" id="logoBtn">Upload logo</button><button type="button" class="btn" id="logoRm" hidden>Remove</button><input type="file" id="logo" accept="image/*" class="sr" tabindex="-1" aria-label="Logo file"><span class="hint" id="logoName" style="margin:0">No logo added</span></div>
+ <p class="hint">A logo covers part of the code, so error correction is raised to High automatically.</p></div>
+    <div class="field"><span class="lbl">Brand presets</span>
+ <div class="logo-row"><input type="text" id="pn" placeholder="Style name" maxlength="20" autocomplete="off" style="flex:1;min-width:8rem"><button type="button" class="btn" id="pSave">Save style</button></div>
+ <div class="logo-row" id="pList" style="margin-top:.6rem"></div>
+ <p class="hint">Saved in this browser only, never uploaded. Keeps colors, styles, frame, label and logo.</p></div>
+    <details class="adv"><summary>Advanced options</summary>
+     <div class="body">
+      <div class="row">
+       <div class="field"><label for="ecc">Error correction</label>
+        <select id="ecc"><option value="L">Low (7%)</option><option value="M" selected>Medium (15%)</option><option value="Q">Quartile (25%)</option><option value="H">High (30%)</option></select>
+        <p class="hint">Higher levels let a code survive more damage but make it denser. Medium suits most uses.</p></div>
+       <div class="field"><label for="margin">Quiet zone: <output id="mv">4</output> modules</label>
+        <input type="range" id="margin" min="1" max="8" value="4" style="width:100%;accent-color:var(--accent)">
+        <p class="hint">The empty border around the code. Scanners need at least 4 for reliable results.</p></div>
+      </div>
+     </div>
+    </details>
+   </div>
+  </div>
+  <aside class="pv" aria-labelledby="pv-h">
+   <h2 id="pv-h" style="font-size:1.5rem;margin-bottom:1rem">Preview</h2>
+   <div class="stage">
+    <canvas id="cv" role="img" aria-label="Your QR code preview"></canvas>
+    <div class="empty" id="empty"><strong>Your code will appear here</strong>Enter valid content on the left and it shows up instantly.</div>
+   </div>
+   <p class="state" id="state" role="status" aria-live="polite"></p>
+   <div class="score" id="score" hidden><span class="badge" id="bd"></span><span id="fx"></span></div>
+   <div class="lw" id="lw" hidden></div>
+   <div class="rp" id="rp" hidden><small>What a phone will show</small><strong id="rpH"></strong><span id="rpD"></span></div>
+   <div class="row" style="margin-top:1rem">
+    <div><label for="size">PNG size</label><select id="size"><option value="512">Small · 512 px</option><option value="1024" selected>Medium · 1024 px</option><option value="2048">Large · 2048 px</option></select></div>
+    <div><label for="printsz">Print width</label><select id="printsz"><option value="3">3 cm</option><option value="5" selected>5 cm</option><option value="10">10 cm</option></select></div>
+   </div>
+   <p class="hint" id="guide"></p>
+   <div class="acts">
+    <button class="btn primary" id="dlPng" disabled><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg>Download PNG</button>
+    <button class="btn" id="dlSvg" disabled><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg>Download SVG</button>
+    <button class="btn" id="dlPdf" disabled><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg>Download PDF</button>
+    <button class="btn" id="cpImg" disabled><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg>Copy image</button>
+    <button class="btn" id="cpTxt" disabled><svg class="ic" aria-hidden="true"><use href="#i-text"/></svg>Copy content</button>
+    <button class="btn" id="cpLink"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg>Copy settings link</button>
+   </div>
+   <p class="hint">PNG suits screens. SVG stays sharp at any size. The PDF holds a high-resolution image of the code on an A4 page. The settings link restores colors and styles only, never your content or logo.</p>
+   <div class="field" style="margin-top:1.25rem"><label for="tpl">Print template (A4 PDF)</label><select id="tpl"><option value="poster">Poster with frame and headline</option><option value="tent">Table tent</option><option value="card">Business cards, 10 per page</option><option value="stick">Sticker sheet, 24 per page</option></select></div>
+   <div class="field"><label for="ttl">Small line of text (optional)</label><input type="text" id="ttl" placeholder="e.g. Open daily, 9 to 9" maxlength="48" autocomplete="off"><p class="hint">Print templates use plain Latin letters and numbers only.</p></div>
+   <div class="acts"><button class="btn primary" id="dlTpl" disabled>Download template</button><button class="btn" id="dlTest" disabled>Print test sheet</button></div>
+   <p id="msg" role="status" aria-live="polite"></p>
+  </aside>
+ </section>
+</div>
+<div class="wrap">
+ <section class="block" id="how" aria-labelledby="how-h">
+  <div class="sec-head"><h2 id="how-h">How it works</h2><p>Three quick steps. No account, no waiting.</p></div>
+  <ol class="steps">
+   <li><span class="n" aria-hidden="true">1</span><h3>Choose what your code contains</h3><p>Pick a link, payment, contact, location, Wi-Fi or another type and fill in the details.</p></li>
+   <li><span class="n" aria-hidden="true">2</span><h3>Preview and adjust</h3><p>Watch the code update as you type, and change its colors if you want.</p></li>
+   <li><span class="n" aria-hidden="true">3</span><h3>Download and test</h3><p>Save the file, then scan it before you share or print it.</p></li>
+  </ol></section>
+ <section class="block" aria-labelledby="use-h">
+  <div class="sec-head"><h2 id="use-h">Where people use them</h2></div>
+  <ul class="uses">
+   <li><h3>Menus and events</h3><p>Point guests to a menu, schedule or map.</p></li>
+   <li><h3>Business cards</h3><p>Share a website or contact email without typing.</p></li>
+   <li><h3>Product packaging</h3><p>Link to instructions or a support page.</p></li>
+   <li><h3>Wi-Fi access</h3><p>Let visitors join your network by scanning.</p></li>
+   <li><h3>Posters and print</h3><p>Connect a printed page to something online.</p></li>
+  </ul>
+  <p class="hint" style="margin-top:1.5rem;max-width:40rem">These codes hold your content directly. They don’t track scans, and the content can’t be changed after printing, so make a new code if the destination changes.</p>
+ </section>
+ <section class="block" id="faq" aria-labelledby="faq-h">
+  <div class="sec-head"><h2 id="faq-h">Frequently asked questions</h2><p>Quick answers about making, testing and printing your code.</p></div>
+  <div class="faq">
+   <details><summary>What can I put in a QR code?</summary><div class="body">Here you can encode a web address, plain text, email, phone number, Wi-Fi details, WhatsApp chat, UPI payment, contact card, social profile, map location or calendar event.</div></details>
+   <details><summary>Are these QR codes free to download?</summary><div class="body">Yes. Downloading PNG, SVG and PDF files here doesn’t require an account.</div></details>
+   <details><summary>Can a QR code stop working?</summary><div class="body">The code itself doesn’t expire, because it contains your content directly. It can stop being useful if the website it points to goes away, or if the printed code gets damaged or smudged.</div></details>
+   <details><summary>Why should I test the code before printing it?</summary><div class="body">Devices and scanner apps differ. Test at the size you intend to print, on the real background, with more than one phone if you can.</div></details>
+   <details><summary>What file format should I use for print?</summary><div class="body">SVG is the safest choice because it stays sharp at any size. If you use PNG, keep it at its original size or smaller rather than enlarging it.</div></details>
+   <details><summary>Does changing the colors affect scanning?</summary><div class="body">It can. Keep a dark code on a light background with strong contrast. Light codes on dark backgrounds and low-contrast pairs fail on some scanners, and the page warns you when contrast is low.</div></details>
+  </div></section>
+ <section class="block" id="help" aria-labelledby="help-h">
+  <div class="sec-head"><h2 id="help-h">Help center</h2><p>Stuck, or found something that isn’t working? Send us a message.</p></div>
+  <div class="help">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+   <div class="hm"><small>Email support</small><a id="hmail" href="#help">Show email address</a></div>
+   <button type="button" class="btn" id="hcopy">Copy email</button>
+  </div>
+  <p class="help-note">Tell us which type of code you made and what you see on screen, so we can help faster.</p>
+  <script>(function(){var m=["luceelhelp","outlook.com"].join("@"),a=document.getElementById("hmail"),b=document.getElementById("hcopy");a.textContent=m;a.href="mailto:"+m+"?subject="+encodeURIComponent("Luceel Mark help");b.onclick=function(){var d=function(t){b.textContent=t;setTimeout(function(){b.textContent="Copy email"},2000)};try{navigator.clipboard.writeText(m).then(function(){d("Copied")},function(){d(m)})}catch(e){d(m)}}})();</script>
+ </section>
+ <section class="block" id="legal" aria-labelledby="legal-h">
+  <div class="sec-head"><h2 id="legal-h">Privacy and terms</h2><p>The short version, in plain language.</p></div>
+  <div class="legal">
+   <article><h3>Privacy</h3><ul>
+    <li>Your code is made in your browser. Links, Wi-Fi passwords, payment details and anything else you type are not sent to us or stored on a server.</li>
+    <li>This page saves only two things in your browser: your light or dark choice, and any styles you save (colors, shapes, label and logo). Clear your browser data to remove them.</li>
+    <li>The page loads fonts from Google Fonts and code libraries from cdnjs, so those services can see your IP address and browser details, as with most websites.</li>
+    <li>There are no accounts, ads or tracking on this page.</li>
+    <li>If you email us, we use your message only to reply to you.</li>
+   </ul></article>
+   <article><h3>Terms</h3><ul>
+    <li>Luceel Mark is free to use and is provided as it is, with no promise that it is error-free. Test every code before you print or share it.</li>
+    <li>You are responsible for what you put in a code and where it points. Don’t use it for scams, malware or anything unlawful or harmful.</li>
+    <li>Anyone who scans a code can read its content, so don’t encode anything you want to keep private.</li>
+    <li>We don’t host, track or change your codes. If the place a code points to moves or disappears, the code stops being useful.</li>
+    <li>To the extent the law allows, Luceel is not liable for losses that come from using this tool.</li>
+    <li>We may update these terms from time to time.</li>
+   </ul></article>
+  </div>
+  <p class="legal-note">Last updated 31 October 2026. Questions? Email luceelhelp@outlook.com.</p>
+ </section>
+</div>
+</main>
+<footer id="about"><div class="wrap">
+ <div class="foot">
+  <div><a class="brand" href="#top"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>Luceel Mark</a>
+   <p class="muted" style="margin-top:.75rem;max-width:30rem">A small tool for making QR codes for links, payments, contacts, locations, Wi-Fi and more. Codes are generated in your browser, and this page doesn’t send what you enter anywhere.</p></div>
+  <ul><li><a href="#generator">Generator</a></li><li><a href="#how">How it works</a></li><li><a href="#faq">FAQ</a></li><li><a href="#help">Help center</a></li><li><a href="#legal">Privacy and terms</a></li></ul>
+ </div>
+ <p class="small">© 2026 Luceel.</p>
+</div></footer>
+<button type="button" class="btn primary" id="pvJump">View preview</button>
+<script>(function(){var b=document.getElementById("pvJump"),p=document.querySelector(".pv"),g=document.getElementById("generator");if(!b||!p||!g||!("IntersectionObserver" in window))return;var a=false,c=false;function s(){b.classList.toggle("on",a&&!c)}new IntersectionObserver(function(e){c=e[0].isIntersecting;s()}).observe(p);new IntersectionObserver(function(e){a=e[0].isIntersecting;s()}).observe(g);b.onclick=function(){p.scrollIntoView({behavior:"smooth",block:"start"})}})();</script>
+<script crossorigin="anonymous" referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script crossorigin="anonymous" referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var type="url",qr=null,payload="",info=["",""],seq=0,logo=null;
+var PRESETS=[["Charcoal","#22262a","#ffffff"],["Slate","#2f4f57","#f3f4f1"],["Forest","#2b3f33","#f5f6f1"],["Navy","#1f2a44","#f4f5f8"],["Black","#000000","#ffffff"]];
+var touched={};
+/* theme */
+var root=document.documentElement,tb=$("themeBtn"),mq=matchMedia("(prefers-color-scheme:dark)");
+function isDark(){var t=root.getAttribute("data-theme");return t?t==="dark":mq.matches}
+function paintTheme(){var d=isDark();tb.setAttribute("aria-label",d?"Switch to light mode":"Switch to dark mode");tb.innerHTML='<svg class="ic" aria-hidden="true"><use href="#i-'+(d?"sun":"moon")+'"/></svg>'}
+tb.onclick=function(){var n=isDark()?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("qm-theme",n)}catch(e){}paintTheme()};
+if(mq.addEventListener)mq.addEventListener("change",paintTheme);
+paintTheme();
+/* new content types */
+var T=[["whatsapp","WhatsApp",[["wa","WhatsApp number","+91 98765 43210","tel","Include the country code."],["wam","Message (optional)","Hi! I found you through your QR code.","area"]]],
+["upi","UPI payment",[["upa","UPI ID","name@bank","text","Example: shopname@okicici"],["upn","Payee name","Shop name"],["upm","Amount in ₹ (optional)","250"],["upt","Note (optional)","Order 1042"]]],
+["contact","Contact card",[["vn","Full name"],["vo","Company (optional)"],["vp","Phone (optional)","+91 98765 43210","tel"],["ve","Email (optional)","name@example.com"],["vw","Website (optional)","example.com"]]],
+["social","Social link",[["sp","Platform",["Instagram","X","LinkedIn","YouTube","Facebook","GitHub","Telegram"],"select"],["su","Username or profile link","yourname"]]],
+["map","Location",[["mq","Address, place or latitude,longitude","Charminar, Hyderabad","text","You can also paste coordinates like 17.3616, 78.4747."]]],
+["event","Calendar event",[["et","Event title"],["el","Location (optional)"],["es","Starts","","datetime-local"],["ee","Ends (optional)","","datetime-local","If left empty, the event lasts one hour."],["ed","Details (optional)","","area"]]]],GID=[];
+T.forEach(function(t){var b=document.createElement("button");b.className="tab";b.setAttribute("role","tab");b.id="t-"+t[0];b.setAttribute("aria-controls","p-"+t[0]);b.setAttribute("aria-selected","false");b.tabIndex=-1;b.textContent=t[1];$("tabs").appendChild(b);
+ var p=document.createElement("div");p.setAttribute("role","tabpanel");p.id="p-"+t[0];p.setAttribute("aria-labelledby","t-"+t[0]);p.hidden=true;p.className="g";
+ p.innerHTML=t[2].map(function(f){GID.push(f[0]);var k=f[3]||"text",c=k==="select"?"<select id=\""+f[0]+"\">"+f[2].map(function(o){return"<option>"+o+"</option>"}).join("")+"</select>":k==="area"?"<textarea id=\""+f[0]+"\" style=\"min-height:5rem\" placeholder=\""+(f[2]||"")+"\"></textarea>":"<input type=\""+k+"\" id=\""+f[0]+"\" autocomplete=\"off\" placeholder=\""+(f[2]||"")+"\">";
+  return"<div class=\"field\"><label for=\""+f[0]+"\">"+f[1]+"</label>"+c+(f[4]?"<p class=\"hint\">"+f[4]+"</p>":"")+"<p class=\"err\" id=\""+f[0]+"-e\"></p></div>"}).join("");
+ document.querySelector(".style").before(p)});
+(function(){var t=$("tabs"),w=document.createElement("div");w.className="tabwrap";t.parentNode.insertBefore(w,t);
+ var B=document.createElement("button");B.type="button";B.className="tabmore";B.setAttribute("aria-controls","tabs");w.appendChild(t);w.appendChild(B);function lab(){var o=w.classList.contains("open"),s=t.querySelector("[aria-selected=true]"),h=!o&&s&&s.offsetTop-t.firstElementChild.offsetTop>10;B.classList.toggle("has",!!h);B.title=h?"Selected: "+s.textContent:"";B.setAttribute("aria-expanded",o);B.innerHTML=(o?"Less":"More")+'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>'}function set(o){w.classList.toggle("open",o);lab();chk()}B.onclick=function(){set(!w.classList.contains("open"))};t.addEventListener("click",function(e){if(e.target.closest(".tab"))set(false)});t.addEventListener("focusin",function(e){if(e.target.offsetTop>20)set(true)});lab();
+ function chk(){var f=t.firstElementChild,l=t.lastElementChild;B.hidden=l.offsetTop-f.offsetTop<10}
+ t.addEventListener("scroll",chk);window.addEventListener("resize",chk);window.addEventListener("load",chk);chk();setTimeout(chk,400)})();
+/* tabs */
+var tabs=[].slice.call(document.querySelectorAll(".tab"));
+function setTab(t,focus){type=t;tabs.forEach(function(b){var on=b.id==="t-"+t;b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1;$(b.getAttribute("aria-controls")).hidden=!on;if(on&&focus)b.focus()});update()}
+tabs.forEach(function(b,i){
+ b.onclick=function(){setTab(b.id.slice(2))};
+ b.onkeydown=function(e){var n=null;
+  if(e.key==="ArrowRight")n=(i+1)%tabs.length;else if(e.key==="ArrowLeft")n=(i-1+tabs.length)%tabs.length;
+  else if(e.key==="Home")n=0;else if(e.key==="End")n=tabs.length-1;
+  if(n!==null){e.preventDefault();setTab(tabs[n].id.slice(2),true)}}
+});
+/* presets */
+var pr=$("presets");
+PRESETS.forEach(function(p){var b=document.createElement("button");b.type="button";b.className="preset";b.setAttribute("aria-pressed","false");
+ b.innerHTML='<span class="sw" style="background:'+p[1]+'"></span><span class="sw" style="background:'+p[2]+'"></span>'+p[0];
+ b.onclick=function(){$("fg").value=p[1];$("bg").value=p[2];update()};pr.appendChild(b)});
+function markPresets(){[].forEach.call(pr.children,function(b,i){b.setAttribute("aria-pressed",PRESETS[i][1]===$("fg").value&&PRESETS[i][2]===$("bg").value)})}
+/* payload + validation */
+function setErr(id,msg){var e=$(id+"-e"),f=$(id);if(!e)return;var show=msg&&touched[id];e.textContent=show?"Error: "+msg:"";if(f)f.setAttribute("aria-invalid",show?"true":"false")}
+function esc(s){return s.replace(/([\\;,:"])/g,"\\$1")}
+function build0(){
+ var v;
+ if(type==="url"){v=$("url").value.trim();
+  if(!v){setErr("url","Enter a website address.");return null}
+  var u=/^[a-z][a-z0-9+.-]*:\/\//i.test(v)?v:"https://"+v;
+  try{var x=new URL(u);if(!/^https?:$/.test(x.protocol))throw 0;if(!/\./.test(x.hostname)&&x.hostname!=="localhost")throw 0;if(/\s/.test(v))throw 0}
+  catch(e){setErr("url","That doesn’t look like a web address. Try something like example.com/menu.");return null}
+  setErr("url","");return u}
+ if(type==="text"){v=$("text").value;
+  if(!v.trim()){setErr("text","Enter some text.");return null}setErr("text","");return v}
+ if(type==="email"){v=$("email").value.trim();
+  if(!v){setErr("email","Enter an email address.");return null}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){setErr("email","Enter an address like name@example.com.");return null}
+  setErr("email","");var q=[],s=$("subject").value.trim(),b=$("body").value.trim();
+  if(s)q.push("subject="+encodeURIComponent(s));if(b)q.push("body="+encodeURIComponent(b));
+  return "mailto:"+v+(q.length?"?"+q.join("&"):"")}
+ if(type==="phone"){v=$("phone").value.trim();
+  if(!v){setErr("phone","Enter a phone number.");return null}
+  var d=v.replace(/[\s().-]/g,"");
+  if(!/^\+?\d{5,15}$/.test(d)){setErr("phone","Use 5 to 15 digits. Spaces, dashes, brackets and a leading + are fine.");return null}
+  setErr("phone","");return "tel:"+d}
+ if(type==="wifi"){var ok=true,sid=$("ssid").value,sec=$("wsec").value,pw=$("wpass").value;
+  if(!sid.trim()){setErr("ssid","Enter the network name.");ok=false}else setErr("ssid","");
+  if(sec!=="nopass"&&!pw){setErr("wpass","Enter the password, or choose “None” for an open network.");ok=false}
+  else if(sec==="WPA"&&pw&&pw.length<8){setErr("wpass","WPA passwords are at least 8 characters.");ok=false}else setErr("wpass","");
+  if(!ok)return null;
+  return "WIFI:T:"+sec+";S:"+esc(sid)+";"+(sec==="nopass"?"":"P:"+esc(pw)+";")+($("whidden").checked?"H:true;":"")+";"}
+}
+/* builders for new types */
+var E=encodeURIComponent,W=function(i){return $(i).value};
+function rq(id,msg){var v=W(id).trim();setErr(id,v?"":msg);return v}
+var NB={
+whatsapp:function(){var n=rq("wa","Enter a WhatsApp number."),d=n.replace(/\D/g,""),m=W("wam").trim();if(!n)return null;
+ if(d.length<8||d.length>15){setErr("wa","Use the full number with country code, 8 to 15 digits.");return null}
+ info=["Opens a WhatsApp chat with +"+d,m||"No message pre-filled"];return"https://wa.me/"+d+(m?"?text="+E(m):"")},
+upi:function(){var a=rq("upa","Enter the UPI ID."),p=rq("upn","Enter the payee name."),am=W("upm").trim(),ok=!!a&&!!p;
+ if(a&&!/^[\w.\-]{2,}@[A-Za-z]{2,}$/.test(a)){setErr("upa","Use a UPI ID like name@bank.");ok=false}
+ if(am&&(!/^\d+(\.\d{1,2})?$/.test(am)||+am<=0)){setErr("upm","Enter an amount above 0, like 250 or 99.50.");ok=false}else setErr("upm","");
+ if(!ok)return null;var t=W("upt").trim();info=["Asks to pay "+p,a+(am?" · ₹"+am:" · the payer enters the amount")];
+ return"upi://pay?pa="+E(a).replace(/%40/g,"@")+"&pn="+E(p)+(am?"&am="+am:"")+"&cu=INR"+(t?"&tn="+E(t):"")},
+contact:function(){var n=rq("vn","Enter a name."),ph=W("vp").trim(),em=W("ve").trim(),w=W("vw").trim(),o=W("vo").trim(),ok=!!n;
+ if(em&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){setErr("ve","Enter an address like name@example.com.");ok=false}else setErr("ve","");
+ if(!ok)return null;var z=function(x){return x.replace(/([\\;,])/g,"\\$1")};
+ info=["Offers to save the contact “"+n+"”",ph||em||o||w||"Name only"];
+ return"BEGIN:VCARD\nVERSION:3.0\nFN:"+z(n)+"\nN:"+z(n)+";;;;"+(o?"\nORG:"+z(o):"")+(ph?"\nTEL:"+ph.replace(/[^\d+]/g,""):"")+(em?"\nEMAIL:"+em:"")+(w?"\nURL:"+(/^[a-z][a-z0-9+.-]*:\/\//i.test(w)?w:"https://"+w):"")+"\nEND:VCARD"},
+social:function(){var u=rq("su","Enter a username or profile link."),P={Instagram:"https://instagram.com/",X:"https://x.com/",LinkedIn:"https://www.linkedin.com/in/",YouTube:"https://www.youtube.com/@",Facebook:"https://facebook.com/",GitHub:"https://github.com/",Telegram:"https://t.me/"};if(!u)return null;
+ var l=/^https?:\/\//i.test(u)?u:P[W("sp")]+u.replace(/^[@\/]+/,"");
+ try{if(/\s/.test(u)||!/^https?:$/.test(new URL(l).protocol))throw 0;info=["Opens "+new URL(l).hostname.replace(/^www\./,""),l]}catch(e){setErr("su","That doesn’t look like a valid username or link.");return null}
+ return l},
+map:function(){var q=rq("mq","Enter an address, place or coordinates.");if(!q)return null;var c=q.match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
+ if(c&&(Math.abs(c[1])>90||Math.abs(c[2])>180)){setErr("mq","Latitude must be within ±90 and longitude within ±180.");return null}
+ info=["Opens Google Maps",q];return"https://www.google.com/maps/search/?api=1&query="+E(c?c[1]+","+c[2]:q)},
+event:function(){var t=rq("et","Enter the event title."),s=rq("es","Choose a start time."),e=W("ee"),ok=!!t&&!!s,a=new Date(s),b=e?new Date(e):new Date(a.getTime()+36e5);
+ if(s&&e&&b<=a){setErr("ee","The end must be after the start.");ok=false}else setErr("ee","");if(!ok)return null;
+ var p=function(n){return("0"+n).slice(-2)},f=function(d){return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"T"+p(d.getHours())+p(d.getMinutes())+"00"},z=function(x){return x.replace(/([\\;,])/g,"\\$1").replace(/\n/g,"\\n")},l=W("el").trim(),d=W("ed").trim();
+ info=["Offers to add “"+t+"” to your calendar",a.toLocaleString([],{dateStyle:"medium",timeStyle:"short"})];
+ return"BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:"+z(t)+"\nDTSTART:"+f(a)+"\nDTEND:"+f(b)+(l?"\nLOCATION:"+z(l):"")+(d?"\nDESCRIPTION:"+z(d):"")+"\nEND:VEVENT\nEND:VCALENDAR"}};
+function build(){var r;
+ if(NB[type])return NB[type]();
+ r=build0();if(!r)return r;
+ if(type==="url")info=["Opens "+new URL(r).hostname.replace(/^www\./,""),r];
+ else if(type==="text")info=["Shows this text",r.length>90?r.slice(0,90)+"…":r];
+ else if(type==="email")info=["Writes an email to "+W("email").trim(),W("subject").trim()||"No subject"];
+ else if(type==="phone")info=["Calls "+W("phone").trim(),"Opens your phone’s dialer"];
+ else if(type==="wifi")info=["Joins Wi-Fi “"+W("ssid")+"”",W("wsec")==="nopass"?"Open network, no password":"The password is stored in the code"];
+ return r}
+/* color helpers */
+function lum(h){var c=[1,3,5].map(function(i){var s=parseInt(h.substr(i,2),16)/255;return s<=.03928?s/12.92:Math.pow((s+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}
+function contrast(a,b){var x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)}
+/* drawing */
+function rr(x,y,w,h,r){if(!r)return"M"+x+" "+y+"h"+w+"v"+h+"h-"+w+"z";r=Math.min(r,w/2,h/2);var a="a"+r+" "+r+" 0 0 1 ",q=w-2*r,v=h-2*r;return"M"+(x+r)+" "+y+"h"+q+a+r+" "+r+"v"+v+a+"-"+r+" "+r+"h-"+q+a+"-"+r+" -"+r+"v-"+v+a+r+" -"+r+"z"}
+function dims(){var t=qr.getModuleCount()+2*+W("margin"),f=+W("fstyle")?2:0,h=f?Math.max(5,Math.round(t*.14)):0;return[t+2*f,t+2*f+h,t,f,h]}
+var RF=[[0,0],[1.8,.8],[3.5,2.5]],RB=[0,.8,1.5],RD=[0,.32,.5];
+function mkSvg(){var fg=W("fg"),bg=W("bg"),m=+W("margin"),n=qr.getModuleCount(),t=n+2*m,s=+W("dot"),f=+W("frame"),b=+W("ball"),d="",z=s==2?.9:1,p=(1-z)/2,i,j,L=0,o=0;
+ if(logo){L=Math.round(n*.22);if((n-L)%2)L++;o=(n-L)/2}
+ for(i=0;i<n;i++)for(j=0;j<n;j++){if(!qr.isDark(i,j)||(i<7&&(j<7||j>=n-7))||(i>=n-7&&j<7))continue;
+  if(L&&i>=o-1&&i<o+L+1&&j>=o-1&&j<o+L+1)continue;d+=rr(m+j+p,m+i+p,z,z,RD[s]*z)}
+ [[0,0],[n-7,0],[0,n-7]].forEach(function(e){var x=m+e[0],y=m+e[1];d+=rr(x,y,7,7,RF[f][0])+rr(x+1,y+1,5,5,RF[f][1])+rr(x+2,y+2,3,3,RB[b])});
+ var lg=L?'<rect x="'+(m+o-1)+'" y="'+(m+o-1)+'" width="'+(L+2)+'" height="'+(L+2)+'" rx="1.2" fill="'+bg+'"/><image href="'+logo+'" x="'+(m+o)+'" y="'+(m+o)+'" width="'+L+'" height="'+L+'" preserveAspectRatio="xMidYMid meet"/>':"";
+ var D=dims(),fr=D[3],hh=D[4],gr=+W("grad"),fill=gr?"url(#g)":fg,W2=D[0],H2=D[1],lt=(W("lbl").trim()||"Scan me").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+ var defs=gr?'<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+fg+'"/><stop offset="1" stop-color="'+W("fg2")+'"/></linearGradient></defs>':"";
+ var fm=fr?'<rect x=".35" y=".35" width="'+(W2-.7)+'" height="'+(H2-.7)+'" rx="2.2" fill="none" stroke="'+fill+'" stroke-width=".7"/><rect x="'+fr+'" y="'+(t+fr)+'" width="'+t+'" height="'+hh+'" rx="1.5" fill="'+fill+'"/><text x="'+(fr+t/2)+'" y="'+(t+fr+hh/2)+'" fill="'+bg+'" font-size="'+(hh*.5)+'" font-weight="700" font-family="Segoe UI,Arial,sans-serif" text-anchor="middle" dominant-baseline="central">'+lt+'</text>':"";
+ return'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W2+' '+H2+'" width="'+W2*10+'" height="'+H2*10+'">'+defs+'<rect width="'+W2+'" height="'+H2+'" fill="'+bg+'"/>'+fm+'<g transform="translate('+fr+' '+fr+')"><rect width="'+t+'" height="'+t+'" fill="'+bg+'"/><path fill-rule="evenodd" d="'+d+'" fill="'+fill+'"/>'+lg+'</g></svg>'}
+function raster(px,cb){var D=dims(),k=Math.max(2,Math.round(px/D[0])),w=D[0]*k,h=D[1]*k,im=new Image();
+ im.onload=function(){var c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(im,0,0,w,h);cb(c)};
+ im.onerror=function(){cb(null)};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(mkSvg())}
+/* scan safety */
+function showScore(ok){var fg=W("fg"),bg=W("bg"),m=+W("margin"),t=dims()[0],mm=+W("printsz")*10/t,c=Math.min(contrast(fg,bg),+W("grad")?contrast(W("fg2"),bg):99),is=[];
+ if(c<3)is.push([60,"Use colors that differ more: a dark code on a light background works best."]);else if(c<4.5)is.push([25,"Increase the contrast between the code and its background a little."]);
+ if(lum(fg)>lum(bg))is.push([30,"Swap the colors so the code is darker than its background."]);
+ if(m<4)is.push([20,"Set the quiet zone to at least 4 modules."]);
+ if(mm<.35)is.push([45,"Print it larger or use shorter content. Each dot would be only "+mm.toFixed(2)+" mm."]);else if(mm<.5)is.push([20,"Print a little larger for the most reliable scans."]);
+ if(ok===false)is.push([70,"This code didn’t scan in our check. Try square dots, higher contrast or shorter content."]);
+ if(t>77)is.push([15,"Shorter content makes a simpler code that scans faster."]);
+ var tot=is.reduce(function(a,x){return a+x[0]},0),k=tot>=45?"bad":tot>=15?"fair":"ok";is.sort(function(a,b){return b[0]-a[0]});
+ $("bd").className="badge "+k;$("bd").textContent=k==="ok"?"Excellent":k==="fair"?"Fair":"Risky";
+ $("fx").textContent=(ok===true?"Passed our scan check. ":"")+(is.length?is[0][1]:"Looks good. Still test it with a phone before you print.");$("score").hidden=false}
+/* update */
+var btns=["dlPng","dlSvg","dlPdf","cpImg","cpTxt","dlTpl","dlTest"];
+function setReady(r){btns.forEach(function(b){$(b).disabled=!r})}
+function update(){var m=+W("margin"),st=$("state"),me=++seq;$("mv").textContent=m;markPresets();
+ payload=build()||"";qr=null;$("msg").textContent="";$("ecc").disabled=!!logo;DD.forEach(function(f){f()});
+ function none(){$("cv").style.display="none";$("empty").style.display="";setReady(false);$("score").hidden=true;$("rp").hidden=true;$("lw").hidden=true;$("guide").textContent=""}
+ if(!payload){none();st.className="state";st.textContent="Waiting for content";return}
+ try{qr=qrcode(0,logo?"H":W("ecc"));qr.addData(payload,"Byte");qr.make()}
+ catch(e){qr=null;none();st.className="state bad";st.textContent="Error: this is too much content for a QR code. Shorten it or choose a lower error-correction level.";return}
+ var t=dims()[0],cm=+W("printsz"),need=Math.ceil(cm/2.54*300),w=t*Math.max(2,Math.round(+W("size")/t));
+ linkWarn();$("rpH").textContent=info[0];$("rpD").textContent=info[1];$("rp").hidden=false;setReady(true);
+ st.className="state ok";st.textContent="Your code is ready to download";
+ $("guide").textContent="At "+cm+" cm wide each dot is "+(cm*10/t).toFixed(2)+" mm, and the code scans from about "+cm*10+" cm away. Sharp 300 dpi print needs "+need+" px; "+(w>=need?"this PNG size covers it.":"choose a larger PNG, or use SVG or PDF.");
+ raster(640,function(c){if(me!==seq)return;
+  if(!c){st.className="state bad";st.textContent="Error: the preview couldn’t be drawn. Try again.";return}
+  var cv=$("cv"),x=cv.getContext("2d",{willReadFrequently:true}),ok=null;cv.width=c.width;cv.height=c.height;x.drawImage(c,0,0);cv.style.display="block";$("empty").style.display="none";
+  try{var im=x.getImageData(0,0,c.width,c.height),r=jsQR(im.data,c.width,c.height,{inversionAttempts:"attemptBoth"});ok=!!r&&r.data===payload}catch(e){}
+  showScore(ok)})}
+/* actions */
+var mt;function say(t,bad){var e=$("msg");e.textContent=t;e.style.color=bad?"var(--err)":"var(--ok)";clearTimeout(mt);mt=setTimeout(function(){e.textContent=""},6000)}
+function save(blob,name){var a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1500)}
+function pngBlob(px,cb){raster(px,function(c){if(!c)return cb(null);c.toBlob(cb,"image/png")})}
+$("dlPng").onclick=function(){if(!qr)return;var px=+W("size");pngBlob(px,function(b){if(!b)return say("The PNG could not be created. Try again.",1);save(b,"luceel-mark-qr-"+px+".png");say("Download started: luceel-mark-qr-"+px+".png")})};
+$("dlSvg").onclick=function(){if(!qr)return;save(new Blob([mkSvg()],{type:"image/svg+xml"}),"luceel-mark-qr.svg");say("Download started: luceel-mark-qr.svg")};
+$("dlPdf").onclick=function(){if(!qr)return;raster(1400,function(c){if(!c)return say("The PDF could not be created. Try again.",1);
+ var j=atob(c.toDataURL("image/jpeg",.95).split(",")[1]),u=new Uint8Array(j.length),i;for(i=0;i<j.length;i++)u[i]=j.charCodeAt(i);
+ var S=+W("printsz")*28.3465,x=((595.28-S)/2).toFixed(2),y=((841.89-S)/2).toFixed(2),te=new TextEncoder(),ps=[],off=[],len=0;
+ function add(a){if(typeof a==="string")a=te.encode(a);ps.push(a);len+=a.length}
+ function ob(n,h,bin){off[n]=len;add(n+" 0 obj\n"+h);if(bin){add(bin);add("\nendstream")}add("\nendobj\n")}
+ var cs="q "+S.toFixed(2)+" 0 0 "+(S*c.height/c.width).toFixed(2)+" "+x+" "+y+" cm /Im0 Do Q";add("%PDF-1.4\n");
+ ob(1,"<</Type/Catalog/Pages 2 0 R>>");ob(2,"<</Type/Pages/Kids[3 0 R]/Count 1>>");
+ ob(3,"<</Type/Page/Parent 2 0 R/MediaBox[0 0 595.28 841.89]/Resources<</XObject<</Im0 4 0 R>>>>/Contents 5 0 R>>");
+ ob(4,"<</Type/XObject/Subtype/Image/Width "+c.width+"/Height "+c.height+"/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length "+u.length+">>\nstream\n",u);
+ ob(5,"<</Length "+cs.length+">>\nstream\n"+cs+"\nendstream");
+ var xo=len,xr="xref\n0 6\n0000000000 65535 f \n";for(i=1;i<6;i++)xr+=("0000000000"+off[i]).slice(-10)+" 00000 n \n";
+ add(xr+"trailer\n<</Size 6/Root 1 0 R>>\nstartxref\n"+xo+"\n%%EOF");
+ save(new Blob(ps,{type:"application/pdf"}),"luceel-mark-qr.pdf");say("Download started: luceel-mark-qr.pdf, with the code at "+W("printsz")+" cm wide on an A4 page.")})};
+$("cpImg").onclick=function(){if(!qr)return;
+ if(!(navigator.clipboard&&window.ClipboardItem))return say("Copying images isn’t supported in this browser. Use Download PNG instead.",1);
+ var p=new Promise(function(ok,no){pngBlob(1000,function(b){b?ok(b):no()})});
+ navigator.clipboard.write([new ClipboardItem({"image/png":p})]).then(function(){say("Image copied to your clipboard.")},function(){say("The browser blocked copying. Use Download PNG instead.",1)})};
+$("cpTxt").onclick=function(){if(!payload)return;
+ if(!(navigator.clipboard&&navigator.clipboard.writeText))return say("Copying isn’t available in this browser.",1);
+ navigator.clipboard.writeText(payload).then(function(){say("Content copied. This is exactly what the code contains.")},function(){say("The browser blocked copying.",1)})};
+/* shareable settings (colors and style only, never content) */
+var SZ=["512","1024","2048"],PS=["3","5","10"],EC=["L","M","Q","H"];
+function tok(){return"s-"+W("fg").slice(1)+W("bg").slice(1)+W("dot")+W("frame")+W("ball")+EC.indexOf(W("ecc"))+W("margin")+SZ.indexOf(W("size"))+PS.indexOf(W("printsz"))}
+function fromHash(){var m=/^s-([0-9a-f]{6})([0-9a-f]{6})([0-2])([0-2])([0-2])([0-3])([1-8])([0-2])([0-2])$/.exec(location.hash.slice(1));if(!m)return;
+ $("fg").value="#"+m[1];$("bg").value="#"+m[2];$("dot").value=m[3];$("frame").value=m[4];$("ball").value=m[5];$("ecc").value=EC[m[6]];$("margin").value=m[7];$("size").value=SZ[m[8]];$("printsz").value=PS[m[9]]}
+$("cpLink").onclick=function(){var u=location.href.split("#")[0]+"#"+tok();
+ if(!(navigator.clipboard&&navigator.clipboard.writeText))return say("Copying isn’t available here. Use this link: "+u,1);
+ navigator.clipboard.writeText(u).then(function(){say("Settings link copied. It restores colors and styles only, never your content or logo.")},function(){say("The browser blocked copying.",1)})};
+window.addEventListener("hashchange",function(){fromHash();update()});
+/* logo */
+$("logoBtn").onclick=function(){$("logo").click()};
+$("logo").onchange=function(){var f=this.files[0];if(!f)return;var im=new Image(),u=URL.createObjectURL(f);
+ im.onload=function(){var k=Math.min(1,256/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));
+  c.getContext("2d").drawImage(im,0,0,c.width,c.height);logo=c.toDataURL("image/png");URL.revokeObjectURL(u);$("logoName").textContent="Added: "+f.name;$("logoRm").hidden=false;update()};
+ im.onerror=function(){$("logoName").textContent="That file couldn’t be read as an image."};im.src=u};
+$("logoRm").onclick=function(){logo=null;$("logo").value="";$("logoName").textContent="No logo added";this.hidden=true;update()};
+/* link check */
+function linkWarn(){var u=null,w=[];try{if(/^https?:\/\//i.test(payload)&&type!=="map"&&type!=="whatsapp")u=new URL(payload)}catch(e){}
+ if(u){var h=u.hostname.toLowerCase();
+  if(/^(bit\.ly|tinyurl\.com|t\.co|goo\.gl|is\.gd|cutt\.ly|rb\.gy|ow\.ly|shorturl\.at|tiny\.cc|buff\.ly|rebrand\.ly)$/.test(h))w.push("This is a shortened link, so people can’t see where it leads. Use the full address if you can.");
+  if(/^[\d.]+$|^\[/.test(h))w.push("The link uses a raw IP address instead of a site name, which many people distrust.");
+  if(h.indexOf("xn--")>-1)w.push("The address contains look-alike characters (xn--). Check that it is the site you mean.");
+  if(u.username||u.password)w.push("The link has a username before the site name, a common trick to hide the real site. Remove it.");
+  if(u.protocol==="http:")w.push("The link starts with http, not https, so browsers may warn people. Use https if the site supports it.");
+  if(/\.(zip|mov|top|tk|gq|ml|cf|ga|click|xyz)$/.test(h))w.push("The ending “."+h.split(".").pop()+"” is often used for spam. Make sure it is the right address.");
+  if(h.split(".").length>4)w.push("The address has many sub-parts, which can hide the real site. Check the last two parts.");
+  if(/\.(exe|apk|msi|bat|scr)$/i.test(u.pathname))w.push("The link downloads a program file. Only share this if you made it yourself.")}
+ var e=$("lw");e.textContent="";e.hidden=!w.length;if(!w.length)return;
+ var t=document.createElement("strong");t.textContent="Check this link before you print";e.appendChild(t);var l=document.createElement("ul");
+ w.slice(0,3).forEach(function(x){var li=document.createElement("li");li.textContent=x;l.appendChild(li)});e.appendChild(l)}
+/* brand presets (browser only) */
+var PK="quietmark-presets",PF=["fg","bg","fg2","grad","dot","frame","ball","margin","fstyle","lbl"];
+function pLoad(){try{return JSON.parse(localStorage.getItem(PK))||[]}catch(e){return[]}}
+function pStore(a){try{localStorage.setItem(PK,JSON.stringify(a));return true}catch(e){say("This browser blocked saving presets.",1);return false}}
+function pDraw(){var a=pLoad(),b=$("pList");b.textContent="";a.forEach(function(p,i){var c=document.createElement("span"),u=document.createElement("button"),x=document.createElement("button");c.className="chip";
+ u.type=x.type="button";u.textContent=p.n;x.textContent="×";x.setAttribute("aria-label","Delete preset "+p.n);
+ u.onclick=function(){PF.forEach(function(k){if(p.v[k]!=null)$(k).value=p.v[k]});logo=/^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(p.l||"")?p.l:null;$("logoRm").hidden=!logo;$("logoName").textContent=logo?"Added from preset":"No logo added";update();say("Applied “"+p.n+"”.")};
+ x.onclick=function(){a.splice(i,1);if(pStore(a))pDraw()};c.appendChild(u);c.appendChild(x);b.appendChild(c)})}
+$("pSave").onclick=function(){var n=W("pn").trim();if(!n)return say("Give the preset a name first.",1);var v={};PF.forEach(function(k){v[k]=W(k)});
+ var a=pLoad().filter(function(p){return p.n!==n});a.unshift({n:n,v:v,l:logo});if(a.length>8)a.length=8;if(pStore(a)){pDraw();$("pn").value="";say("Saved “"+n+"”.")}};
+pDraw();
+/* print templates and test sheet */
+function fit(s,z,w){return Math.min(z,w/(Math.max(1,String(s).length)*.6))}
+var PT=28.3465;
+function pi(x,y,w,h){return"q "+w.toFixed(2)+" 0 0 "+h.toFixed(2)+" "+x.toFixed(2)+" "+y.toFixed(2)+" cm /Im0 Do Q\n"}
+function ptx(s,x,y,z,al,f){s=String(s).replace(/[^\x20-\x7E]/g,"").replace(/([\\()])/g,"\\$1");if(!s)return"";var w=s.length*z*.56;return"BT /"+(f||"F1")+" "+z+" Tf "+(x-(al==="c"?w/2:al==="r"?w:0)).toFixed(2)+" "+y.toFixed(2)+" Td ("+s+") Tj ET\n"}
+function rgb(h){return[1,3,5].map(function(i){return(parseInt(h.substr(i,2),16)/255).toFixed(3)}).join(" ")}
+function buildPdf(c,cs,name){var j=atob(c.toDataURL("image/jpeg",.95).split(",")[1]),u=new Uint8Array(j.length),i,te=new TextEncoder(),ps=[],off=[],len=0;for(i=0;i<j.length;i++)u[i]=j.charCodeAt(i);
+ function add(a){if(typeof a==="string")a=te.encode(a);ps.push(a);len+=a.length}
+ function ob(n,h,bin){off[n]=len;add(n+" 0 obj\n"+h);if(bin){add(bin);add("\nendstream")}add("\nendobj\n")}
+ add("%PDF-1.4\n");ob(1,"<</Type/Catalog/Pages 2 0 R>>");ob(2,"<</Type/Pages/Kids[3 0 R]/Count 1>>");
+ ob(3,"<</Type/Page/Parent 2 0 R/MediaBox[0 0 595.28 841.89]/Resources<</XObject<</Im0 4 0 R>>/Font<</F1 6 0 R/F2 7 0 R>>>>/Contents 5 0 R>>");
+ ob(4,"<</Type/XObject/Subtype/Image/Width "+c.width+"/Height "+c.height+"/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length "+u.length+">>\nstream\n",u);
+ ob(5,"<</Length "+te.encode(cs).length+">>\nstream\n"+cs+"\nendstream");
+ ob(6,"<</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>");ob(7,"<</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>");
+ var xo=len,xr="xref\n0 8\n0000000000 65535 f \n";for(i=1;i<8;i++)xr+=("0000000000"+off[i]).slice(-10)+" 00000 n \n";
+ add(xr+"trailer\n<</Size 8/Root 1 0 R>>\nstartxref\n"+xo+"\n%%EOF");save(new Blob(ps,{type:"application/pdf"}),name);say("Download started: "+name)}
+$("dlTpl").onclick=function(){if(!qr)return;raster(1400,function(c){if(!c)return say("The template could not be created. Try again.",1);
+ var ar=c.height/c.width,L=W("lbl").trim()||"Scan me",T=W("ttl").trim(),k=W("tpl"),ink=rgb(W("fg"))+" rg\n",g="0.55 G\n",o="",i,x,y,w,h,r,q;
+ if(k==="poster"){w=340;h=w*ar;y=(W("fstyle")==="1"?700:690)-h;o=ink+(W("fstyle")==="1"?"":ptx(L,297.64,730,fit(L,58,500),"c"))+pi(297.64-w/2,y,w,h)+"0.2 g\n"+ptx(T,297.64,y-40,fit(T,22,500),"c","F2")}
+ else if(k==="tent"){w=227;h=w*ar;o="[6 4] 0 d 0.6 w 0.6 G 0 420.95 m 595.28 420.95 l S [] 0 d\nq -1 0 0 -1 595.28 841.89 cm\n"+ink+ptx(L,297.64,350,fit(L,34,200),"c")+pi(297.64-w/2,330-h,w,h)+"0.2 g\n"+ptx(T,297.64,330-h-26,fit(T,16,200),"c","F2")+"Q\n"+ink+ptx(L,297.64,350,fit(L,34,200),"c")+pi(297.64-w/2,330-h,w,h)+"0.2 g\n"+ptx(T,297.64,330-h-26,fit(T,16,200),"c","F2")}
+ else if(k==="card"){w=255.1;h=155.9;q=100;r=q*ar;for(i=0;i<10;i++){x=42.5+(i%2)*w;y=31.2+Math.floor(i/2)*h;o+=g+"0.5 w "+x+" "+y+" "+w+" "+h+" re S\n"+pi(x+w-q-14,y+(h-r)/2,q,r)+ink+ptx(L,x+14,y+h-44,fit(L,17,125),"l")+"0.2 g\n"+ptx(T,x+14,y+h-62,fit(T,9,125),"l","F2")}}
+ else{w=127.6;q=99.2;r=q*ar;for(i=0;i<24;i++){x=42.5+(i%4)*w;y=38.2+Math.floor(i/4)*w;o+=g+"0.4 w "+x+" "+y+" "+w+" "+w+" re S\n"+pi(x+(w-q)/2,y+(w-r)/2+(T?6:0),q,r)+"0.2 g\n"+ptx(T,x+w/2,y+6,fit(T,7,w-10),"c","F2")}}
+ buildPdf(c,o,"luceel-mark-"+k+".pdf")})};
+$("dlTest").onclick=function(){if(!qr)return;raster(1400,function(c){if(!c)return say("The test sheet could not be created. Try again.",1);var ar=c.height/c.width,y1=760-283.5*ar,y2=y1-70-141.7*ar,o="0.1 g\n"+ptx("Luceel Mark scan test sheet",40,805,20,"l")+ptx("Print this page at 100% (no Fit to page).",40,787,10,"l","F2");
+ o+=pi(155.9,y1,283.5,283.5*ar)+ptx("10 cm",297.64,y1-16,12,"c")+pi(80,y2,141.7,141.7*ar)+ptx("5 cm",150.85,y2-16,12,"c")+pi(340,y2,85,85*ar)+ptx("3 cm",382.5,y2-16,12,"c");
+ o+=ptx("Hold a phone about ten times the code width away: 100 cm for 10 cm, 50 cm for 5 cm, 30 cm for 3 cm.",40,120,10,"l","F2")+ptx("Every size should scan on the first try. If the small one fails, print your code larger.",40,106,10,"l","F2");
+ buildPdf(c,o,"luceel-mark-test-sheet.pdf")})};
+/* wiring */
+["url","text","email","subject","body","phone","ssid","wpass","wsec","whidden","fg","bg","ecc","margin","dot","frame","ball","size","printsz","fg2","grad","fstyle","lbl"].concat(GID).forEach(function(id){
+ var el=$(id);el.addEventListener("input",function(){touched[id]=true;update()});el.addEventListener("change",function(){touched[id]=true;update()});
+ el.addEventListener("blur",function(){touched[id]=true;update()})});
+$("wsec").addEventListener("change",function(){$("wpass").disabled=this.value==="nopass";update()});
+/* themed dropdowns */
+var DD=[],chev='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+function dd(s){var w=document.createElement("div"),b=document.createElement("button"),l=document.createElement("ul"),id=s.id,idx=-1,lab=document.querySelector('label[for="'+id+'"]');
+ w.className="dd";b.type="button";b.className="dd-b";b.setAttribute("role","combobox");b.setAttribute("aria-haspopup","listbox");b.setAttribute("aria-expanded","false");
+ l.className="dd-l";l.setAttribute("role","listbox");l.id=id+"-lb";l.hidden=true;b.setAttribute("aria-controls",l.id);
+ if(lab){lab.id=lab.id||id+"-lab";b.setAttribute("aria-labelledby",lab.id);l.setAttribute("aria-labelledby",lab.id);lab.addEventListener("click",function(e){e.preventDefault();b.focus()})}
+ s.parentNode.insertBefore(w,s);w.appendChild(s);w.appendChild(b);w.appendChild(l);s.classList.add("dd-n");s.tabIndex=-1;s.setAttribute("aria-hidden","true");
+ [].forEach.call(s.options,function(o,i){var li=document.createElement("li");li.setAttribute("role","option");li.id=id+"-o"+i;li.textContent=o.textContent;li.dataset.i=i;l.appendChild(li)});
+ function sync(){var o=s.options[s.selectedIndex];b.innerHTML="<span>"+(o?o.textContent:"")+"</span>"+chev;b.disabled=s.disabled;[].forEach.call(l.children,function(li,i){li.setAttribute("aria-selected",i===s.selectedIndex)})}
+ function mark(i){idx=i;[].forEach.call(l.children,function(li,k){li.classList.toggle("on",k===i)});var c=l.children[i];if(c){b.setAttribute("aria-activedescendant",c.id);c.scrollIntoView({block:"nearest"})}}
+ function close(f){l.hidden=true;w.classList.remove("open","up");b.setAttribute("aria-expanded","false");b.removeAttribute("aria-activedescendant");if(f)b.focus()}
+ function open(){if(!l.hidden||b.disabled)return;document.querySelectorAll(".dd.open").forEach(function(x){x._c&&x._c()});l.hidden=false;w.classList.add("open");b.setAttribute("aria-expanded","true");
+  var r=l.getBoundingClientRect();if(r.bottom>innerHeight&&b.getBoundingClientRect().top>r.height+16)w.classList.add("up");mark(s.selectedIndex)}
+ function pick(i){if(i<0||i>=s.options.length)return;if(s.selectedIndex!==i){s.selectedIndex=i;s.dispatchEvent(new Event("change",{bubbles:true}))}sync();close(true)}
+ w._c=function(){close(false)};DD.push(sync);sync();
+ b.addEventListener("click",function(){l.hidden?open():close(true)});
+ b.addEventListener("keydown",function(e){var k=e.key,n=s.options.length;
+  if(l.hidden){if(k==="ArrowDown"||k==="ArrowUp"||k==="Enter"||k===" "){e.preventDefault();open()}return}
+  if(k==="ArrowDown"){e.preventDefault();mark(Math.min(n-1,idx+1))}else if(k==="ArrowUp"){e.preventDefault();mark(Math.max(0,idx-1))}
+  else if(k==="Home"){e.preventDefault();mark(0)}else if(k==="End"){e.preventDefault();mark(n-1)}
+  else if(k==="Enter"||k===" "){e.preventDefault();pick(idx)}else if(k==="Escape"){e.preventDefault();close(true)}else if(k==="Tab")close(false)});
+ l.addEventListener("mousedown",function(e){e.preventDefault()});
+ l.addEventListener("mousemove",function(e){var li=e.target.closest("li");if(li&&+li.dataset.i!==idx)mark(+li.dataset.i)});
+ l.addEventListener("click",function(e){var li=e.target.closest("li");if(li)pick(+li.dataset.i)});
+ document.addEventListener("click",function(e){if(!w.contains(e.target))close(false)})}
+[].slice.call(document.querySelectorAll("select")).forEach(dd);
+/* themed color pickers */
+var SW=["#22262a","#2f4f57","#2b3f33","#1f2a44","#000000","#b4572f","#5b2a4e","#a77b1f","#3d6a76","#ffffff","#f3f4f1","#f5f6f1","#e8eef0","#efe6d8"];
+function h2v(h){var n=parseInt(h.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255,M=Math.max(r,g,b),m=Math.min(r,g,b),d=M-m,H=0;if(d){H=M===r?((g-b)/d)%6:M===g?(b-r)/d+2:(r-g)/d+4;H*=60;if(H<0)H+=360}return[H,M?d/M:0,M/255]}
+function v2h(H,S,V){var f=function(n){var k=(n+H/60)%6;return V-V*S*Math.max(0,Math.min(k,4-k,1))},x=function(t){return("0"+Math.round(f(t)*255).toString(16)).slice(-2)};return"#"+x(5)+x(3)+x(1)}
+function cp(inp){var w=document.createElement("div"),b=document.createElement("button"),p=document.createElement("div"),hv=[0,0,0],last="",q=0,lab=document.querySelector('label[for="'+inp.id+'"]');
+ w.className="cp";b.type="button";b.className="cp-b";b.setAttribute("aria-haspopup","dialog");b.setAttribute("aria-expanded","false");
+ if(lab){lab.id=lab.id||inp.id+"-lab";b.setAttribute("aria-labelledby",lab.id);lab.addEventListener("click",function(e){e.preventDefault();b.focus()})}
+ p.className="cp-p";p.hidden=true;p.setAttribute("role","dialog");p.setAttribute("aria-label","Choose a color");
+ p.innerHTML='<div class="cp-sv"><b></b></div><div class="cp-h"><b></b></div><input class="cp-x" type="text" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex color"><div class="cp-sw"></div>';
+ inp.parentNode.insertBefore(w,inp);w.appendChild(inp);w.appendChild(b);w.appendChild(p);inp.style.display="none";
+ var sv=p.firstChild,hu=sv.nextSibling,hx=hu.nextSibling,sw=hx.nextSibling,svm=sv.firstChild,hm=hu.firstChild;
+ SW.forEach(function(c){var s=document.createElement("button");s.type="button";s.style.background=c;s.setAttribute("aria-label",c);s.onclick=function(){set(c)};sw.appendChild(s)});
+ function paint(){var c=inp.value;b.innerHTML='<i style="background:'+c+'"></i><span>'+c+'</span>';sv.style.backgroundColor="hsl("+hv[0]+",100%,50%)";svm.style.left=hv[1]*100+"%";svm.style.top=(1-hv[2])*100+"%";hm.style.left=hv[0]/360*100+"%";
+  if(document.activeElement!==hx)hx.value=c;[].forEach.call(sw.children,function(s){s.setAttribute("aria-pressed",s.getAttribute("aria-label")===c)})}
+ function fire(){if(q)return;q=requestAnimationFrame(function(){q=0;inp.dispatchEvent(new Event("input",{bubbles:true}))})}
+ function set(c,keep){inp.value=last=c;if(!keep)hv=h2v(c);paint();fire()}
+ function sync(){if(inp.value===last)return;last=inp.value;hv=h2v(last);paint()}
+ function cl(v){return Math.max(0,Math.min(1,v))}
+ function drag(el,fn){el.addEventListener("pointerdown",function(e){e.preventDefault();el.setPointerCapture(e.pointerId);fn(e);el.onpointermove=fn});el.addEventListener("pointerup",function(){el.onpointermove=null})}
+ drag(sv,function(e){var r=sv.getBoundingClientRect();hv[1]=cl((e.clientX-r.left)/r.width);hv[2]=1-cl((e.clientY-r.top)/r.height);set(v2h(hv[0],hv[1],hv[2]),true)});
+ drag(hu,function(e){var r=hu.getBoundingClientRect();hv[0]=cl((e.clientX-r.left)/r.width)*359.9;set(v2h(hv[0],hv[1],hv[2]),true)});
+ hx.addEventListener("input",function(){var v=hx.value.trim();if(v[0]!=="#")v="#"+v;if(/^#[0-9a-fA-F]{6}$/.test(v))set(v.toLowerCase())});
+ function close(f){p.hidden=true;w.classList.remove("open","up");b.setAttribute("aria-expanded","false");if(f)b.focus()}
+ function open(){document.querySelectorAll(".cp.open").forEach(function(x){x._c&&x._c()});p.hidden=false;w.classList.add("open");b.setAttribute("aria-expanded","true");var r=p.getBoundingClientRect();if(r.bottom>innerHeight&&b.getBoundingClientRect().top>r.height+16)w.classList.add("up")}
+ w._c=function(){close(false)};b.addEventListener("click",function(){p.hidden?open():close(true)});
+ w.addEventListener("keydown",function(e){if(e.key==="Escape"&&!p.hidden){e.preventDefault();close(true)}});
+ document.addEventListener("click",function(e){if(!w.contains(e.target))close(false)});
+ DD.push(sync);sync()}
+["fg","bg","fg2"].forEach(function(i){cp($(i))});
+if(typeof qrcode==="undefined"){$("state").className="state bad";$("state").textContent="Error: the QR library didn’t load. Check your connection and reload the page."}
+else{qrcode.stringToBytes=qrcode.stringToBytesFuncs["UTF-8"];fromHash();update()}
+})();
+</script>
+</body>
+</html>
